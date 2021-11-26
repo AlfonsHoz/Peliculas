@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.peliculas.model.Data
 import com.example.peliculas.model.Result
+import com.example.peliculas.recyclerMoviesList.MoviesAdapter
 import com.example.peliculas.webservice.ApiService
 import com.example.peliculas.webservice.RetrofitClass
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         adapter = MoviesAdapter(movies)
         val rvMovies = findViewById<RecyclerView>(R.id.rvMovies)
         rvMovies.adapter = adapter
+        rvMovies.layoutManager = LinearLayoutManager(this)
     }
 
     private fun getAllMovies() {
