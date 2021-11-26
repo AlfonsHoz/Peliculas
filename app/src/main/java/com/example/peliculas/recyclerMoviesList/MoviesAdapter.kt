@@ -44,7 +44,7 @@ class MoviesAdapter(
             Picasso.get().load(movie.image.small_url).into(image)
             nameText.text = movie.name
             ratingText.text = ("Rating: " + movie.rating)
-            dateText.text = ("Se agregó el: " + movie.date_added)
+            dateText.text = "Release date: ${movie.release_date}"
         }
 
         init {

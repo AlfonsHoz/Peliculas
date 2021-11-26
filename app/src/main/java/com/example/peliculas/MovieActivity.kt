@@ -9,15 +9,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.peliculas.helpers.producers
+import com.example.peliculas.helpers.strings
+import com.example.peliculas.helpers.writers
 import com.example.peliculas.model.Data
 import com.example.peliculas.model.Result
-import com.example.peliculas.model.Studio
 import com.example.peliculas.webservice.ApiService
 import com.example.peliculas.webservice.RetrofitClass
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,7 +31,10 @@ class MovieActivity : AppCompatActivity() {
     private lateinit var movieTitle: TextView
     private lateinit var rantingMovie: TextView
     private lateinit var studios: TextView
-    private lateinit var  description: TextView
+    private lateinit var description: TextView
+    private lateinit var producersText: TextView
+    private lateinit var writersText: TextView
+    private lateinit var releaseDate: TextView
 
     private var id: String = ""
     private lateinit var movie: Result
@@ -41,6 +47,10 @@ class MovieActivity : AppCompatActivity() {
         rantingMovie = findViewById(R.id.rantingMovie)
         studios = findViewById(R.id.studios)
         description = findViewById(R.id.description)
+        producersText = findViewById(R.id.producerstext)
+        writersText = findViewById(R.id.writersText)
+        releaseDate = findViewById(R.id.releaseDate)
+
         //Trae el id del la película que fue seleccionada
         id = intent.getStringExtra("id").toString()
         //llama a la función para llamar a la api
@@ -83,16 +93,16 @@ class MovieActivity : AppCompatActivity() {
         Picasso.get().load(movie.image.medium_url).into(imgMovie)
         movieTitle.text = movie.name
         rantingMovie.text = ("Rating: " + movie.rating)
+        releaseDate.text = ("Release date: ${movie.release_date}")
         studios.text = ("Studios: " + strings(movie.studios))
-        description.text = ("Descripción: \n" + Html.fromHtml(movie.description, Html.FROM_HTML_MODE_COMPACT).toString())
-    }
+        if (movie.producers != null) producersText.text =
+            ("Producers: ${producers(movie.producers)}")
+        if (movie.writers != null) writersText.text =
+            ("Writers: ${writers(movie.writers)}")
+        if (movie.description != null) description.text =
+            ("Description: \n" + Html.fromHtml(movie.description, Html.FROM_HTML_MODE_COMPACT)
+                .toString())
 
-    private fun strings(list: List<Studio>): String {
-        var res = ""
-        list.forEachIndexed { idx, item: Studio ->
-            if (idx != list.size) res += (item.name + ", ")
-        }
-        return res
     }
 
 }
