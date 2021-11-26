@@ -1,5 +1,8 @@
 package com.example.peliculas.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class Data(
     val error: String,
     val limit: Int,
@@ -11,7 +14,9 @@ data class Data(
     val version: String
 )
 
+@Entity(tableName = "movies")
 data class Result(
+    @PrimaryKey
     val api_detail_url: String,
     val box_office_revenue: String,
     val budget: String,
@@ -34,6 +39,7 @@ data class Result(
     val writers: List<Writer>
 )
 
+
 data class Image(
     val icon_url: String,
     val image_tags: String,
@@ -47,6 +53,7 @@ data class Image(
     val tiny_url: String
 )
 
+
 data class Producer(
     val api_detail_url: String,
     val id: Int,
@@ -54,12 +61,14 @@ data class Producer(
     val site_detail_url: String
 )
 
+
 data class Studio(
     val api_detail_url: String,
     val id: Int,
     val name: String,
     val site_detail_url: String
 )
+
 
 data class Writer(
     val api_detail_url: String,

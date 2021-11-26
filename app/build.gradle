@@ -1,7 +1,10 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id "org.jetbrains.kotlin.kapt"
 }
+
+def room_version = "2.3.0"
 
 android {
     compileSdk 31
@@ -49,9 +52,14 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
 
+    //picasso para las imágenes
     implementation 'com.squareup.picasso:picasso:2.8'
 
-    implementation 'androidx.room:room-ktx:2.3.0'
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+
 
 
 }
