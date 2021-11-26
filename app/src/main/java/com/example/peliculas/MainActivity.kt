@@ -35,8 +35,10 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        movies = returnJsonInList()
         getAllMovies()
         initRecyclerView()
+
     }
 
     private fun initRecyclerView() {
@@ -54,10 +56,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             result.enqueue(object : Callback<Data> {
                 override fun onFailure(call: Call<Data>, t: Throwable) {
                     Log.e("Error Api", t.toString())
-                    val moviesFromLocal = returnJsonInList()
-                    runOnUiThread {
-                        movies = moviesFromLocal
-                    }
                 }
 
                 @RequiresApi(Build.VERSION_CODES.M)
@@ -73,9 +71,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                     }
                 }
             })
-
         }
-
     }
 
     override fun onItemClick(position: Int) {
@@ -87,7 +83,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     fun returnJsonInList(): MutableList<Result> {
         //utiliza la función de Utils.kt enviandole el contexto y el nombre del archivo.
-        val jsonFileString = getJsonDataFromAssets(applicationContext, "movieData.json")
+        val jsonFileString = getJsonDataFromAssets(applicationContext, "movie_data.json")
         val gson = Gson()
 
         /*guarda el tipo de dato en el cual se va a convertir la inforacion del json a un listado de

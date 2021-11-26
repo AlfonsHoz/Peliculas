@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.peliculas.helpers.getJsonDataFromAssets
 import com.example.peliculas.helpers.producers
 import com.example.peliculas.helpers.strings
 import com.example.peliculas.helpers.writers
@@ -16,11 +17,12 @@ import com.example.peliculas.model.Data
 import com.example.peliculas.model.Result
 import com.example.peliculas.webservice.ApiService
 import com.example.peliculas.webservice.RetrofitClass
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +41,7 @@ class MovieActivity : AppCompatActivity() {
     private var id: String = ""
     private lateinit var movie: Result
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.movie_activity)
@@ -53,8 +56,14 @@ class MovieActivity : AppCompatActivity() {
 
         //Trae el id del la película que fue seleccionada
         id = intent.getStringExtra("id").toString()
+
         //llama a la función para llamar a la api
-        getOneMovie()
+        val ok = getOneMovie()
+        if (!ok){
+            //en caso de no haber internet llama a la funcion del json local
+            movie = intent.getStringExtra("id")?.let { returnJsonInList(it.toInt()) }!!
+            updateUi(movie)
+        }
     }
 
     override fun onDestroy() {
@@ -62,13 +71,13 @@ class MovieActivity : AppCompatActivity() {
         id = ""
     }
 
-    private fun getOneMovie() {
+    private fun getOneMovie(): Boolean {
+        var ok = false
         CoroutineScope(IO).launch {
             val call = RetrofitClass.getRetrofit().create(ApiService::class.java)
             val result: Call<Data> = call.getOneMovieFromApi("id:$id")
             var resp: Data
             result.enqueue(object : Callback<Data> {
-
                 override fun onFailure(call: Call<Data>, t: Throwable) {
                     Log.e("Error Api", t.toString())
                 }
@@ -81,11 +90,13 @@ class MovieActivity : AppCompatActivity() {
                         if (result.isExecuted) {
                             movie = resp.results[0]
                             updateUi(movie)
+                            ok = true
                         }
                     }
                 }
             })
         }
+        return ok
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -102,7 +113,20 @@ class MovieActivity : AppCompatActivity() {
         if (movie.description != null) description.text =
             ("Description: \n" + Html.fromHtml(movie.description, Html.FROM_HTML_MODE_COMPACT)
                 .toString())
+    }
 
+    fun returnJsonInList(id: Int): Result {
+        //utiliza la función de Utils.kt enviandole el contexto y el nombre del archivo.
+        val jsonFileString = getJsonDataFromAssets(applicationContext, "movie_data.json")
+        val gson = Gson()
+        /*guarda el tipo de dato en el cual se va a convertir la inforacion del json a un listado de
+        objetos de Poi
+        */
+        val listMovies = object : TypeToken<Data>() {}.type
+        //Transforma el json en el arreglo de Poi
+        val movies: Data = gson.fromJson(jsonFileString, Data::class.java)
+        movies.results
+        return movies.results[id - 1]
     }
 
 }
