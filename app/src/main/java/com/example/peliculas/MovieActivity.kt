@@ -59,7 +59,7 @@ class MovieActivity : AppCompatActivity() {
 
         //llama a la función para llamar a la api
         val ok = getOneMovie()
-        if (!ok){
+        if (!ok) {
             //en caso de no haber internet llama a la funcion del json local
             movie = intent.getStringExtra("id")?.let { returnJsonInList(it.toInt()) }!!
             updateUi(movie)
@@ -102,10 +102,14 @@ class MovieActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun updateUi(movie: Result) {
         Picasso.get().load(movie.image.medium_url).into(imgMovie)
+        if (movie.name != null)
         movieTitle.text = movie.name
+        if (movie.rating != null)
         rantingMovie.text = ("Rating: " + movie.rating)
-        releaseDate.text = ("Release date: ${movie.release_date}")
-        studios.text = ("Studios: " + strings(movie.studios))
+        if (movie.release_date != null)
+            releaseDate.text = ("Release date: ${movie.release_date}")
+        if (movie.studios != null)
+            studios.text = ("Studios: " + strings(movie.studios))
         if (movie.producers != null) producersText.text =
             ("Producers: ${producers(movie.producers)}")
         if (movie.writers != null) writersText.text =
